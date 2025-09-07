@@ -5,4 +5,18 @@ export default defineConfig({
   plugins: [
     tsConfigPaths(),
   ],
+  test: {
+    pool: 'threads',
+    projects: [
+      {
+        extends: true,
+        test: {
+          globals: true,
+          name: 'unit',
+          include: ['**/*.spec.ts'],
+          root: './',
+        },
+      },
+    ],
+  },
 });
