@@ -7,12 +7,12 @@ import tseslint from 'typescript-eslint';
 export default defineConfig(
   {
     ignores: [
-      "**/*.config.*",
-      "**/node_modules/",
-      "**/build/",
-      "**/coverage/",
-      "**/dist/",
-      "*.json",
+      '**/*.config.*',
+      '**/node_modules/',
+      '**/build/',
+      '**/coverage/',
+      '**/dist/',
+      '*.json',
     ],
   },
   eslint.configs.recommended,
@@ -25,7 +25,7 @@ export default defineConfig(
         ...globals.node,
       },
       ecmaVersion: 5,
-      sourceType: "module",
+      sourceType: 'module',
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -34,15 +34,13 @@ export default defineConfig(
   },
   {
     rules: {
-      "prettier/prettier": "warn",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-floating-promises": "warn",
-      "@typescript-eslint/adjacent-overload-signatures": "warn",
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/require-await": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-return": "off",
+      'prettier/prettier': 'warn',
+      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/adjacent-overload-signatures': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
     },
   },
 );
