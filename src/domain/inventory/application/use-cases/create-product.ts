@@ -1,12 +1,13 @@
 import { Either, right } from '@/core/either';
-import { Product } from '../../enterprise/entities/product';
+import { Product, ProductSize } from '../../enterprise/entities/product';
 import { ProductsRepository } from '../repositories/products-repository';
 
 interface CreateProductUseCaseRequest {
   name: string;
-  size: string;
+  size: ProductSize;
+  price: number;
   color: string;
-  quantity: number;
+  stock: number;
 }
 
 type CreateProductUseCaseResponse = Either<
@@ -22,14 +23,16 @@ export class CreateProductUseCase {
   async execute({
     name,
     size,
+    price,
     color,
-    quantity,
+    stock,
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
     const product = Product.create({
       name,
       size,
+      price,
       color,
-      quantity,
+      stock,
     });
 
     await this.productsRepository.create(product);

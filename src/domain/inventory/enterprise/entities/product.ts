@@ -1,16 +1,24 @@
-import { Entity } from '@/core/entities/entity';
+import { AggregateRoot } from '@/core/entities/aggregate-root';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
+import { ProductInLowStockEvent } from '../events/product-in-low-stock-event';
 
-interface ProductProps {
-  name: string;
-  size: string;
-  color: string;
-  quantity: number;
-  minQuantity: number;
+export enum ProductSize {
+  SMALL = 'SMALL',
+  MEDIUM = 'MEDIUM',
+  LARGE = 'LARGE',
 }
 
-export class Product extends Entity<ProductProps> {
+export interface ProductProps {
+  name: string;
+  size: ProductSize;
+  price: number;
+  color: string;
+  stock: number;
+  minStock: number;
+}
+
+export class Product extends AggregateRoot<ProductProps> {
   get name(): string {
     return this.props.name;
   }
@@ -23,8 +31,16 @@ export class Product extends Entity<ProductProps> {
     return this.props.size;
   }
 
-  set size(size: string) {
+  set size(size: ProductSize) {
     this.props.size = size;
+  }
+
+  get price(): number {
+    return this.props.price;
+  }
+
+  set price(price: number) {
+    this.props.price = price;
   }
 
   get color(): string {
@@ -35,31 +51,44 @@ export class Product extends Entity<ProductProps> {
     this.props.color = color;
   }
 
-  get quantity(): number {
-    return this.props.quantity;
+  get stock(): number {
+    return this.props.stock;
   }
 
-  set quantity(quantity: number) {
-    this.props.quantity = quantity;
+  set stock(stock: number) {
+    this.props.stock = stock;
   }
 
-  get minQuantity(): number {
-    return this.props.minQuantity;
+  get minStock(): number {
+    return this.props.minStock;
   }
 
-  set minQuantity(minQuantity: number) {
-    this.props.minQuantity = minQuantity;
+  set minStock(minStock: number) {
+    this.props.minStock = minStock;
   }
 
-  get isOnLowInventoryProduct(): boolean {
-    return this.quantity <= this.minQuantity;
+  public canFulfillOrder(quantity: number): boolean {
+    return this.props.stock >= quantity;
   }
 
-  static create(
-    props: Optional<ProductProps, 'minQuantity'>,
-    id?: UniqueEntityID,
-  ): Product {
-    const product = new Product({ ...props, minQuantity: props.minQuantity ?? 1 }, id);
+  public isInLowStock() {
+    return this.props.stock <= this.props.minStock;
+  }
+
+  public decreaseStock(quantity: number) {
+    if (!this.canFulfillOrder(quantity)) {
+      throw new Error('Insufficient stock');
+    }
+
+    this.props.stock -= quantity;
+
+    if (this.isInLowStock()) {
+      this.addDomainEvent(new ProductInLowStockEvent(this));
+    }
+  }
+
+  static create(props: Optional<ProductProps, 'minStock'>, id?: UniqueEntityID): Product {
+    const product = new Product({ ...props, minStock: props.minStock ?? 1 }, id);
     return product;
   }
 }

@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository';
 import { CreateProductUseCase } from './create-product';
+import { ProductSize } from '../../enterprise/entities/product';
 
 let productsRepository: InMemoryProductsRepository;
 
@@ -16,8 +17,9 @@ describe('Create Product Use Case', () => {
     const result = await sut.execute({
       name: faker.lorem.word(),
       color: faker.color.rgb(),
-      size: 'M',
-      quantity: 10,
+      price: faker.number.float({ min: 10, max: 5000 }),
+      size: ProductSize.MEDIUM,
+      stock: 10,
     });
 
     expect(result.isRight()).toBe(true);
