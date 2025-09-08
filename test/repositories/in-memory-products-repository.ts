@@ -1,3 +1,4 @@
+import { DomainEvents } from '@/core/events/domain-events';
 import { ProductsRepository } from '@/domain/inventory/application/repositories/products-repository';
 import { Product } from '@/domain/inventory/enterprise/entities/product';
 
@@ -26,6 +27,8 @@ export class InMemoryProductsRepository implements ProductsRepository {
     const productIndex = this.items.findIndex((item) => item.id === product.id);
 
     this.items[productIndex] = product;
+
+    DomainEvents.dispatchEventsForAggregate(product.id);
   }
 
   async delete(product: Product): Promise<void> {

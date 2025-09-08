@@ -10,14 +10,14 @@ export enum SaleOrderStatus {
   CANCELLED = 'CANCELLED',
 }
 
-export interface OrderProps {
+export interface SaleOrderProps {
   products: SaleOrderProduct[];
   orderedAt: Date;
   status: SaleOrderStatus;
   total: number;
 }
 
-export class SaleOrder extends AggregateRoot<OrderProps> {
+export class SaleOrder extends AggregateRoot<SaleOrderProps> {
   get products(): SaleOrderProduct[] {
     return this.props.products;
   }
@@ -47,7 +47,7 @@ export class SaleOrder extends AggregateRoot<OrderProps> {
   }
 
   static create(
-    props: Optional<OrderProps, 'orderedAt' | 'status' | 'total'>,
+    props: Optional<SaleOrderProps, 'orderedAt' | 'status' | 'total'>,
     id?: UniqueEntityID,
   ): SaleOrder {
     const totalAmout = props.products.reduce(
