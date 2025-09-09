@@ -1,4 +1,5 @@
 import { SaleOrder } from '../../enterprise/entities/sale-order';
+import { SalesHistory } from '../../enterprise/entities/value-objects/sales-history';
 
 export abstract class SaleOrdersRepository {
   abstract create(order: SaleOrder): Promise<void>;
@@ -6,4 +7,8 @@ export abstract class SaleOrdersRepository {
   abstract findAll(): Promise<SaleOrder[]>;
   abstract delete(order: SaleOrder): Promise<void>;
   abstract save(order: SaleOrder): Promise<void>;
+  abstract generateSalesHistoryByPeriod(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<SalesHistory>;
 }

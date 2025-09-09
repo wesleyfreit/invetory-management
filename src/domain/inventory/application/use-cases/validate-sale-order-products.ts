@@ -31,7 +31,7 @@ export class ValidateSaleOrderProductsUseCase {
         return left(new ResourceNotFoundError());
       }
 
-      if (!product.canFulfillOrder(orderProduct.quantity)) {
+      if (!product.inventory.canFulfillOrder(orderProduct.quantity)) {
         return left(new InsufficientStockError(product.id.toString()));
       }
 

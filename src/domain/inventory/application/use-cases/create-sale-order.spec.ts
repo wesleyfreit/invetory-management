@@ -1,3 +1,4 @@
+import { makeInventory } from 'test/factories/make-inventory';
 import { makeProduct } from 'test/factories/make-product';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository';
 import { InMemorySaleOrdersRepository } from 'test/repositories/in-memory-sale-orders-repository';
@@ -11,7 +12,7 @@ let sut: CreateSaleOrderUseCase;
 describe('Create Sale Order Use Case', () => {
   beforeEach(() => {
     productsRepository = new InMemoryProductsRepository();
-    saleOrdersRepository = new InMemorySaleOrdersRepository();
+    saleOrdersRepository = new InMemorySaleOrdersRepository(productsRepository);
 
     sut = new CreateSaleOrderUseCase(saleOrdersRepository, productsRepository);
   });
@@ -19,12 +20,10 @@ describe('Create Sale Order Use Case', () => {
   it('should be able to create a sale order with valid products', async () => {
     const products = [
       makeProduct({
-        stock: 10,
-        minStock: 2,
+        inventory: makeInventory({ stock: 10, minStock: 2 }),
       }),
       makeProduct({
-        stock: 10,
-        minStock: 2,
+        inventory: makeInventory({ stock: 10, minStock: 2 }),
       }),
     ];
 

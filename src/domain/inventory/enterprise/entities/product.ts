@@ -1,7 +1,7 @@
 import { AggregateRoot } from '@/core/entities/aggregate-root';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
-import { Optional } from '@/core/types/optional';
 import { ProductInLowStockEvent } from '../events/product-in-low-stock-event';
+import { ProductInventory } from './value-objects/product-inventory';
 
 export enum ProductSize {
   SMALL = 'SMALL',
@@ -14,8 +14,7 @@ export interface ProductProps {
   size: ProductSize;
   price: number;
   color: string;
-  stock: number;
-  minStock: number;
+  inventory: ProductInventory;
 }
 
 export class Product extends AggregateRoot<ProductProps> {
@@ -51,44 +50,32 @@ export class Product extends AggregateRoot<ProductProps> {
     this.props.color = color;
   }
 
-  get stock(): number {
-    return this.props.stock;
+  get inventory(): ProductInventory {
+    return this.props.inventory;
   }
 
-  set stock(stock: number) {
-    this.props.stock = stock;
+  set inventory(inventory: ProductInventory) {
+    this.props.inventory = inventory;
   }
 
-  get minStock(): number {
-    return this.props.minStock;
+  public updateMinStock(minStock: number) {
+    this.props.inventory = this.props.inventory.updateMinStock(minStock);
   }
 
-  set minStock(minStock: number) {
-    this.props.minStock = minStock;
-  }
-
-  public canFulfillOrder(quantity: number): boolean {
-    return this.props.stock >= quantity;
-  }
-
-  public isInLowStock() {
-    return this.props.stock <= this.props.minStock;
+  public increaseStock(quantity: number) {
+    this.props.inventory = this.props.inventory.increaseStock(quantity);
   }
 
   public decreaseStock(quantity: number) {
-    if (!this.canFulfillOrder(quantity)) {
-      throw new Error('Insufficient stock');
-    }
+    this.props.inventory = this.props.inventory.decreaseStock(quantity);
 
-    this.props.stock -= quantity;
-
-    if (this.isInLowStock()) {
+    if (this.props.inventory.isInLowStock()) {
       this.addDomainEvent(new ProductInLowStockEvent(this));
     }
   }
 
-  static create(props: Optional<ProductProps, 'minStock'>, id?: UniqueEntityID): Product {
-    const product = new Product({ ...props, minStock: props.minStock ?? 1 }, id);
+  static create(props: ProductProps, id?: UniqueEntityID): Product {
+    const product = new Product(props, id);
     return product;
   }
 }

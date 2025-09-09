@@ -39,7 +39,7 @@ export class CreateSaleOrderUseCase {
         return left(new ResourceNotFoundError());
       }
 
-      if (!product.canFulfillOrder(quantity)) {
+      if (!product.inventory.canFulfillOrder(quantity)) {
         return left(new InsufficientStockError(productId));
       }
 

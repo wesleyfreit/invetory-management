@@ -19,7 +19,7 @@ export class OnProductInLowStock implements EventHandler {
     await this.sendNotification.execute({
       emailTo: 'management@inventory.com',
       title: `O produto ${product.name} se encontra com estoque baixo`,
-      content: `O produto ${product.name} ${product.minStock < product.stock ? 'ultrapassou' : 'atingiu'} o estoque mínimo de ${product.minStock}. Estoque atual: ${product.stock}.`,
+      content: `O produto ${product.name} ${product.inventory.minStock < product.inventory.stock ? 'ultrapassou' : 'atingiu'} o estoque mínimo de ${product.inventory.minStock}. Estoque atual: ${product.inventory.stock}.`,
     });
   }
 }

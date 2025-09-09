@@ -1,13 +1,14 @@
+import { makeInventory } from 'test/factories/make-inventory';
 import { makeProduct } from 'test/factories/make-product';
 import { makeSaleOrder } from 'test/factories/make-sale-order';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository';
 import { InMemorySaleOrdersRepository } from 'test/repositories/in-memory-sale-orders-repository';
 import { waitFor } from 'test/utils/wait-on';
 import { MockInstance } from 'vitest';
+import { SaleOrderStatus } from '../../enterprise/entities/sale-order';
 import { SaleOrderProduct } from '../../enterprise/entities/value-objects/sale-order-product';
 import { ValidateSaleOrderProductsUseCase } from '../use-cases/validate-sale-order-products';
 import { OnSaleOrderCreated } from './on-sale-order-created';
-import { SaleOrderStatus } from '../../enterprise/entities/sale-order';
 
 let productsRepository: InMemoryProductsRepository;
 let saleOrdersRepository: InMemorySaleOrdersRepository;
@@ -19,7 +20,7 @@ let saveSaleOrderExecuteSpy: MockInstance;
 describe('On Sale Order Created', () => {
   beforeEach(() => {
     productsRepository = new InMemoryProductsRepository();
-    saleOrdersRepository = new InMemorySaleOrdersRepository();
+    saleOrdersRepository = new InMemorySaleOrdersRepository(productsRepository);
 
     sut = new ValidateSaleOrderProductsUseCase(productsRepository);
 
@@ -31,12 +32,10 @@ describe('On Sale Order Created', () => {
   it('should be able to validate sale order products, update stock and finish order', async () => {
     const products = [
       makeProduct({
-        stock: 10,
-        minStock: 2,
+        inventory: makeInventory({ stock: 10, minStock: 2 }),
       }),
       makeProduct({
-        stock: 10,
-        minStock: 2,
+        inventory: makeInventory({ stock: 10, minStock: 2 }),
       }),
     ];
 
@@ -73,11 +72,15 @@ describe('On Sale Order Created', () => {
       expect.arrayContaining([
         expect.objectContaining({
           id: products[0].id,
-          stock: 7,
+          inventory: expect.objectContaining({
+            stock: 7,
+          }),
         }),
         expect.objectContaining({
           id: products[1].id,
-          stock: 7,
+          inventory: expect.objectContaining({
+            stock: 7,
+          }),
         }),
       ]),
     );

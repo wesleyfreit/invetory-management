@@ -3,6 +3,7 @@ import { makeSaleOrder } from 'test/factories/make-sale-order';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository';
 import { SaleOrderProduct } from '../../enterprise/entities/value-objects/sale-order-product';
 import { ValidateSaleOrderProductsUseCase } from './validate-sale-order-products';
+import { makeInventory } from 'test/factories/make-inventory';
 
 let productsRepository: InMemoryProductsRepository;
 
@@ -18,12 +19,10 @@ describe('Validate Sale Order Products Use Case', () => {
   it('should be able to validate the sale order products to finish sale order', async () => {
     const products = [
       makeProduct({
-        stock: 10,
-        minStock: 2,
+        inventory: makeInventory({ stock: 10, minStock: 2 }),
       }),
       makeProduct({
-        stock: 10,
-        minStock: 2,
+        inventory: makeInventory({ stock: 10, minStock: 2 }),
       }),
     ];
 
@@ -58,7 +57,7 @@ describe('Validate Sale Order Products Use Case', () => {
       );
     }
 
-    expect(productsRepository.items[0].stock).toBe(7);
-    expect(productsRepository.items[1].stock).toBe(7);
+    expect(productsRepository.items[0].inventory.stock).toBe(7);
+    expect(productsRepository.items[1].inventory.stock).toBe(7);
   });
 });

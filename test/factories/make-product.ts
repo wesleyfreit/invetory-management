@@ -5,6 +5,7 @@ import {
   ProductSize,
 } from '@/domain/inventory/enterprise/entities/product';
 import { faker } from '@faker-js/faker';
+import { makeInventory } from './make-inventory';
 
 export function makeProduct(
   overrides: Partial<ProductProps> = {},
@@ -16,7 +17,7 @@ export function makeProduct(
       color: faker.color.rgb(),
       price: faker.number.float({ min: 10, max: 5000 }),
       size: faker.helpers.enumValue(ProductSize),
-      stock: faker.number.int({ min: 2, max: 100 }),
+      inventory: makeInventory(),
       ...overrides,
     },
     id,

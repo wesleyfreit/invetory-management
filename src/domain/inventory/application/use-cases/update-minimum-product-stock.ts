@@ -28,7 +28,7 @@ export class UpdateMinimumProductStockUseCase {
       return left(new ResourceNotFoundError());
     }
 
-    product.minStock = minStock;
+    product.updateMinStock(minStock);
 
     await this.productsRepository.save(product);
 

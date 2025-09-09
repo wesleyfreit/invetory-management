@@ -3,8 +3,7 @@ import {
   SaleOrder,
   SaleOrderProps,
 } from '@/domain/inventory/enterprise/entities/sale-order';
-import { SaleOrderProduct } from '@/domain/inventory/enterprise/entities/value-objects/sale-order-product';
-import { makeProduct } from './make-product';
+import { makeSaleProduct } from './make-sale-product';
 
 export function makeSaleOrder(
   overrides: Partial<SaleOrderProps> = {},
@@ -12,13 +11,7 @@ export function makeSaleOrder(
 ): SaleOrder {
   const saleOrder = SaleOrder.create(
     {
-      products: [
-        SaleOrderProduct.create({
-          productId: makeProduct().id,
-          price: 100,
-          quantity: 5,
-        }),
-      ],
+      products: [makeSaleProduct()],
       ...overrides,
     },
     id,

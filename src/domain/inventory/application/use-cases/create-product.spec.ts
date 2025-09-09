@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository';
-import { CreateProductUseCase } from './create-product';
 import { ProductSize } from '../../enterprise/entities/product';
+import { CreateProductUseCase } from './create-product';
 
 let productsRepository: InMemoryProductsRepository;
 
@@ -20,6 +20,7 @@ describe('Create Product Use Case', () => {
       price: faker.number.float({ min: 10, max: 5000 }),
       size: ProductSize.MEDIUM,
       stock: 10,
+      costPrice: 100,
     });
 
     expect(result.isRight()).toBe(true);

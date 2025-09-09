@@ -6,6 +6,7 @@ import { InMemoryProductsRepository } from 'test/repositories/in-memory-products
 import { waitFor } from 'test/utils/wait-on';
 import { MockInstance } from 'vitest';
 import { OnProductInLowStock } from './on-product-in-low-stock';
+import { makeInventory } from 'test/factories/make-inventory';
 
 let productsRepository: InMemoryProductsRepository;
 let notificationsRepository: InMemoryNotificationsRepository;
@@ -32,8 +33,7 @@ describe('On Product In Low Stock', () => {
 
   it('should send a notification when a product is in low stock', async () => {
     const product = makeProduct({
-      stock: 10,
-      minStock: 2,
+      inventory: makeInventory({ stock: 10, minStock: 2 }),
     });
 
     await productsRepository.create(product);
