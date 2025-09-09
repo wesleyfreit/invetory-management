@@ -26,7 +26,7 @@ export class Product extends AggregateRoot<ProductProps> {
     this.props.name = name;
   }
 
-  get size(): string {
+  get size(): ProductSize {
     return this.props.size;
   }
 
@@ -60,6 +60,10 @@ export class Product extends AggregateRoot<ProductProps> {
 
   public updateMinStock(minStock: number) {
     this.props.inventory = this.props.inventory.updateMinStock(minStock);
+  }
+
+  public updateCostPrice(costPrice: number) {
+    this.props.inventory = this.props.inventory.updateCostPrice(costPrice);
   }
 
   public increaseStock(quantity: number) {

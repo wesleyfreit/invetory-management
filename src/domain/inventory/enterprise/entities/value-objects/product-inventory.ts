@@ -37,6 +37,13 @@ export class ProductInventory extends ValueObject<ProductInventoryProps> {
     });
   }
 
+  public updateCostPrice(costPrice: number): ProductInventory {
+    return new ProductInventory({
+      ...this.props,
+      costPrice,
+    });
+  }
+
   public increaseStock(quantity: number): ProductInventory {
     return new ProductInventory({
       ...this.props,
