@@ -6,19 +6,19 @@ import { makeSaleOrder } from 'test/factories/make-sale-order';
 import { makeSaleProduct } from 'test/factories/make-sale-product';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products-repository';
 import { InMemorySaleOrdersRepository } from 'test/repositories/in-memory-sale-orders-repository';
-import { GetSalesHistoryUseCase } from './get-sales-history';
+import { GetSalesTrendsUseCase } from './get-sales-trends';
 
 let productsRepository: InMemoryProductsRepository;
 let saleOrdersRepository: InMemorySaleOrdersRepository;
 
-let sut: GetSalesHistoryUseCase;
+let sut: GetSalesTrendsUseCase;
 
-describe('Get Sales History Use Case', () => {
+describe('Get Sales Trends Use Case', () => {
   beforeEach(() => {
     productsRepository = new InMemoryProductsRepository();
     saleOrdersRepository = new InMemorySaleOrdersRepository(productsRepository);
 
-    sut = new GetSalesHistoryUseCase(saleOrdersRepository);
+    sut = new GetSalesTrendsUseCase(saleOrdersRepository);
   });
 
   beforeAll(() => {
@@ -29,7 +29,7 @@ describe('Get Sales History Use Case', () => {
     vi.useRealTimers();
   });
 
-  it('should be able to get the detailed sales history by period', async () => {
+  it('should be able to get the sales trends details by period', async () => {
     vi.setSystemTime(new Date('2024-01-01T00:00:00Z'));
 
     const products = Array.from({ length: 5 }).map(() =>
@@ -67,43 +67,19 @@ describe('Get Sales History Use Case', () => {
       endDate: new Date('2024-05-01T00:00:00Z'),
     });
 
-    const soldProductsInThePeriod = saleOrders.reduce((acc, order) => {
-      return acc + order.products.reduce((sum, prod) => sum + prod.quantity, 0);
-    }, 0);
-
-    const totalRevenueInThePeriod = saleOrders.reduce(
-      (sum, order) => sum + order.total,
-      0,
-    );
-
     expect(result.isRight()).toBe(true);
 
     expect(result.value).toEqual(
       expect.objectContaining({
-        salesHistory: expect.objectContaining({
-          startPeriod: new Date('2024-01-01T00:00:00Z'),
-          endPeriod: new Date('2024-05-01T00:00:00Z'),
-          soldProductsInThePeriod,
-          totalRevenueInThePeriod,
-          soldProducts: expect.arrayContaining([
-            expect.objectContaining({
-              productId: expect.any(UniqueEntityID),
-              productName: expect.any(String),
-              quantitySold: expect.any(Number),
-              totalProfit: expect.any(Number),
-              totalRevenue: expect.any(Number),
-            }),
-          ]),
-          topSellingProducts: expect.arrayContaining([
-            expect.objectContaining({
-              productId: expect.any(UniqueEntityID),
-              productName: expect.any(String),
-              quantitySold: expect.any(Number),
-              totalProfit: expect.any(Number),
-              totalRevenue: expect.any(Number),
-            }),
-          ]),
-        }),
+        salesTrends: expect.arrayContaining([
+          expect.objectContaining({
+            productId: expect.any(UniqueEntityID),
+            productName: expect.any(String),
+            avgDailySales: expect.any(Number),
+            salesGrowthRate: expect.any(Number),
+            stockLevel: expect.any(Number),
+          }),
+        ]),
       }),
     );
   });

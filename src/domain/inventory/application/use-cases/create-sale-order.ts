@@ -1,5 +1,4 @@
 import { Either, left, right } from '@/core/either';
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { SaleOrder } from '../../enterprise/entities/sale-order';
 import { SaleOrderProduct } from '../../enterprise/entities/value-objects/sale-order-product';
@@ -45,7 +44,7 @@ export class CreateSaleOrderUseCase {
 
       orderProducts.push(
         SaleOrderProduct.create({
-          productId: new UniqueEntityID(productId),
+          productId: product.id,
           price: product.price,
           quantity,
         }),

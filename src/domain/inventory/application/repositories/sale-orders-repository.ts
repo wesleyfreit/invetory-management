@@ -1,5 +1,6 @@
 import { SaleOrder } from '../../enterprise/entities/sale-order';
 import { SalesHistory } from '../../enterprise/entities/value-objects/sales-history';
+import { SalesTrend } from '../../enterprise/entities/value-objects/sales-trend';
 
 export abstract class SaleOrdersRepository {
   abstract create(order: SaleOrder): Promise<void>;
@@ -11,4 +12,5 @@ export abstract class SaleOrdersRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<SalesHistory>;
+  abstract analyzeSalesTrends(startDate: Date, endDate: Date): Promise<SalesTrend[]>;
 }

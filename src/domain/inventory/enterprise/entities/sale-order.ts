@@ -42,10 +42,6 @@ export class SaleOrder extends AggregateRoot<SaleOrderProps> {
     this.props.status = SaleOrderStatus.CANCELLED;
   }
 
-  get isCancelled(): boolean {
-    return this.props.status === SaleOrderStatus.CANCELLED;
-  }
-
   static create(
     props: Optional<SaleOrderProps, 'orderedAt' | 'status' | 'total'>,
     id?: UniqueEntityID,

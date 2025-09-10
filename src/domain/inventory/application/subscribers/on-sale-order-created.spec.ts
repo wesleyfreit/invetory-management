@@ -7,13 +7,13 @@ import { waitFor } from 'test/utils/wait-on';
 import { MockInstance } from 'vitest';
 import { SaleOrderStatus } from '../../enterprise/entities/sale-order';
 import { SaleOrderProduct } from '../../enterprise/entities/value-objects/sale-order-product';
-import { ValidateSaleOrderProductsUseCase } from '../use-cases/validate-sale-order-products';
+import { ProcessStockForSaleOrderUseCase } from '../use-cases/process-stock-for-sale-order';
 import { OnSaleOrderCreated } from './on-sale-order-created';
 
 let productsRepository: InMemoryProductsRepository;
 let saleOrdersRepository: InMemorySaleOrdersRepository;
 
-let sut: ValidateSaleOrderProductsUseCase;
+let sut: ProcessStockForSaleOrderUseCase;
 
 let saveSaleOrderExecuteSpy: MockInstance;
 
@@ -22,7 +22,7 @@ describe('On Sale Order Created', () => {
     productsRepository = new InMemoryProductsRepository();
     saleOrdersRepository = new InMemorySaleOrdersRepository(productsRepository);
 
-    sut = new ValidateSaleOrderProductsUseCase(productsRepository);
+    sut = new ProcessStockForSaleOrderUseCase(productsRepository);
 
     saveSaleOrderExecuteSpy = vi.spyOn(saleOrdersRepository, 'save');
 

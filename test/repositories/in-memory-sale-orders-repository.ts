@@ -5,6 +5,7 @@ import {
   ProductProfit,
   SalesHistory,
 } from '@/domain/inventory/enterprise/entities/value-objects/sales-history';
+import { SalesTrend } from '@/domain/inventory/enterprise/entities/value-objects/sales-trend';
 import { InMemoryProductsRepository } from './in-memory-products-repository';
 
 export class InMemorySaleOrdersRepository implements SaleOrdersRepository {
@@ -93,6 +94,38 @@ export class InMemorySaleOrdersRepository implements SaleOrdersRepository {
         .sort((a, b) => b.quantitySold - a.quantitySold)
         .slice(0, 10),
     });
+  }
+
+  async analyzeSalesTrends(startDate: Date, endDate: Date): Promise<SalesTrend[]> {
+    const salesHistory = await this.generateSalesHistoryByPeriod(startDate, endDate);
+
+    const soldProducts = salesHistory.soldProducts;
+
+    const days = Math.max(
+      1,
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    const salesTrend = this.productsRepository.items.map((product) => {
+      const productSales = soldProducts.filter((sp) => sp.productId.equals(product.id));
+
+      const totalSold = productSales.reduce((sum, sp) => sum + sp.quantitySold, 0);
+
+      const avgDailySales = totalSold / days;
+      const recommendedSafetyStock = Math.ceil(avgDailySales * 7);
+
+      return SalesTrend.create({
+        productId: product.id,
+        productName: product.name,
+        avgDailySales,
+        stockLevel: product.inventory.stock,
+        salesGrowthRate: 0,
+        minStock: product.inventory.minStock,
+        recommendedSafetyStock,
+      });
+    });
+
+    return salesTrend;
   }
 
   async save(saleOrder: SaleOrder): Promise<void> {

@@ -3,11 +3,11 @@ import { EventHandler } from '@/core/events/event-handler';
 import { SaleOrderCreatedEvent } from '../../enterprise/events/order-created-event';
 import { ProductsRepository } from '../repositories/products-repository';
 import { SaleOrdersRepository } from '../repositories/sale-orders-repository';
-import { ValidateSaleOrderProductsUseCase } from '../use-cases/validate-sale-order-products';
+import { ProcessStockForSaleOrderUseCase } from '../use-cases/process-stock-for-sale-order';
 
 export class OnSaleOrderCreated implements EventHandler {
   constructor(
-    private validateSaleOrderProducts: ValidateSaleOrderProductsUseCase,
+    private processStockForSaleOrder: ProcessStockForSaleOrderUseCase,
     private saleOrdersRepository: SaleOrdersRepository,
     private productsRepository: ProductsRepository,
   ) {
@@ -15,26 +15,27 @@ export class OnSaleOrderCreated implements EventHandler {
   }
 
   setupSubscriptions(): void {
-    DomainEvents.register(this.validateOrder.bind(this), SaleOrderCreatedEvent.name);
+    DomainEvents.register(
+      this.processAndFinishOrder.bind(this),
+      SaleOrderCreatedEvent.name,
+    );
   }
 
-  private async validateOrder({ saleOrder }: SaleOrderCreatedEvent) {
-    const result = await this.validateSaleOrderProducts.execute({ saleOrder });
+  private async processAndFinishOrder({ saleOrder }: SaleOrderCreatedEvent) {
+    const result = await this.processStockForSaleOrder.execute({ saleOrder });
 
     if (result.isLeft()) {
-      console.error('Error during order product validation: ', result.value);
-
       saleOrder.cancel();
-    } else {
+    }
+
+    if (result.isRight()) {
       const { productsToUpdate } = result.value;
 
-      if (!saleOrder.isCancelled) {
-        await Promise.all(
-          productsToUpdate.map((product) => this.productsRepository.save(product)),
-        );
+      await Promise.all(
+        productsToUpdate.map((product) => this.productsRepository.save(product)),
+      );
 
-        saleOrder.finish();
-      }
+      saleOrder.finish();
     }
 
     await this.saleOrdersRepository.save(saleOrder);

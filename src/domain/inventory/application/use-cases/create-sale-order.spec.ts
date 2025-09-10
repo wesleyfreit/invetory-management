@@ -17,7 +17,7 @@ describe('Create Sale Order Use Case', () => {
     sut = new CreateSaleOrderUseCase(saleOrdersRepository, productsRepository);
   });
 
-  it('should be able to create a sale order with valid products', async () => {
+  it('should be able to create a sale order with products', async () => {
     const products = [
       makeProduct({
         inventory: makeInventory({ stock: 10, minStock: 2 }),

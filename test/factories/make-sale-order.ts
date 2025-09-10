@@ -11,7 +11,12 @@ export function makeSaleOrder(
 ): SaleOrder {
   const saleOrder = SaleOrder.create(
     {
-      products: [makeSaleProduct()],
+      products: [
+        makeSaleProduct(),
+        makeSaleProduct(),
+        makeSaleProduct(),
+        makeSaleProduct(),
+      ],
       ...overrides,
     },
     id,
